@@ -68,4 +68,51 @@ def delete_user_schedules(db: Session, user_id: int):
     ).delete()
     db.commit()
 
+# 用户查询某段时间内的日程
+def query_user_schedules_by_time(db: Session, user_id: int, start_time: int, end_time: int):
+    return (
+        db.query(models.Schedule)
+        .filter(models.Schedule.user_id == user_id)
+        .filter(models.Schedule.start_time >= start_time)
+        .filter(models.Schedule.end_time <= end_time)
+        .all()
+    )
+
+# 用户查询某段时间内的日程数量
+def query_user_schedules_count_by_time(db: Session, user_id: int, start_time: int, end_time: int):
+    return (
+        db.query(models.Schedule)
+        .filter(models.Schedule.user_id == user_id)
+        .filter(models.Schedule.start_time >= start_time)
+        .filter(models.Schedule.end_time <= end_time)
+        .count()
+    )
+# 查询指定等级的日程
+def query_user_schedules_by_level(db: Session, user_id: int, level: int):
+    return (
+        db.query(models.Schedule)
+        .filter(models.Schedule.user_id == user_id)
+        .filter(models.Schedule.level == level)
+        .all()
+    )
+
+
+# 查询某些等级的日程
+def query_user_schedules_by_levels(db: Session, user_id: int, levels: list):
+    return (
+        db.query(models.Schedule)
+        .filter(models.Schedule.user_id == user_id)
+        .filter(models.Schedule.level.in_(levels))
+        .all()
+    )
+
+# 查询所有日程
+def query_user_schedules(db: Session, user_id: int):
+    return (
+        db.query(models.Schedule)
+        .filter(models.Schedule.user_id == user_id)
+        .all()
+    )
+
+
 # Path: app\crud\user\schedules.py

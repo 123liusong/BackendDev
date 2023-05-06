@@ -43,7 +43,10 @@ class User(Base):
 
     def __repr__(self):
         return f"User(id={self.id}, name={self.name}, email={self.email})"
+
+
 # 包含的字段有 id,name,e
+
 
 # 用户token模型
 class UserToken(Base):
@@ -146,6 +149,10 @@ class Schedule(Base):
     end_time = Column(DateTime, nullable=False)  # 结束时间
     state = Column(Integer, nullable=False)  # 状态 0:正常 1:禁用
     level = Column(Integer, nullable=False)  # 级别  0:普通 1:重要 2:紧急
+    annpexes = relationship("ScheduleAnnex", back_populates="schedule")
+    # 日程清单
+    schedule_list = relationship("TodoList", back_populates="schedule")
+
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
@@ -175,6 +182,8 @@ class TeamMember(Base):
     __tablename__ = "team_member"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # 主键
+    # 别名
+    alias = Column(String(100), nullable=False)
     team_id = Column(Integer, ForeignKey("team.id"))  # 外键 关联team表
     user_id = Column(Integer, ForeignKey("user.id"))  # 外键
     created_at = Column(DateTime, default=func.now())
@@ -215,7 +224,7 @@ class Message(Base):
         return f"Message(id={self.id}, user_id={self.user_id}, content={self.content}, state={self.state})"
 
 
-# 清单模型 1-n
+# 日程清单模型 1-n
 class TodoList(Base):
     __tablename__ = "todo_list"
 
@@ -236,16 +245,16 @@ class TodoList(Base):
         return f"TodoList(id={self.id}, user_id={self.user_id}, title={self.title}, description={self.description}, number={self.number}, type={self.type}, state={self.state})"
 
 
-# 团队聊天模型 1-n
-class TeamChat(Base):
-    __tablename__ = "team_chat"
+# # 团队聊天模型 1-n
+# class TeamChat(Base):
+#     __tablename__ = "team_chat"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # 主键
-    team_id = Column(Integer, ForeignKey("team.id"))  # 外键 关联team表
-    user_id = Column(Integer, ForeignKey("user.id"))  # 外键 关联user表
-    content = Column(String(100), nullable=False)  # 内容
-    state = Column(Integer, nullable=False)  # 状态 0:正常 1:删除
-    created_at = Column(DateTime, default=func.now())
+#     id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # 主键
+#     team_id = Column(Integer, ForeignKey("team.id"))  # 外键 关联team表
+#     user_id = Column(Integer, ForeignKey("user.id"))  # 外键 关联user表
+#     content = Column(String(100), nullable=False)  # 内容
+#     state = Column(Integer, nullable=False)  # 状态 0:正常 1:删除
+#     created_at = Column(DateTime, default=func.now())
 
-    def __repr__(self):
-        return f"TeamChat(id={self.id}, team_id={self.team_id}, user_id={self.user_id}, content={self.content})"
+#     def __repr__(self):
+#         return f"TeamChat(id={self.id}, team_id={self.team_id}, user_id={self.user_id}, content={self.content})"

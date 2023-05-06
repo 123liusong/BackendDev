@@ -39,3 +39,4 @@ urllib3
 uvicorn
 zipp
 psycopg2
+pandoc

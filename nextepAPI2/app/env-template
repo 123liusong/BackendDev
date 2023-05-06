@@ -1,0 +1,6 @@
+POSTGRES_PASSWORD=nextep2023
+POSTGRES_DB=app
+DATABASE_URL=postgresql://postgres:sean@postgres/app
+TEST_DATABASE_URL=postgresql://postgres:sean@postgres/apptest
+SECRET_KEY='3bfc7aeb31e3416fcaa72518a0053150077c2f5b582b02b5eced221f15017e5c'
+BACKEND_CORS_ORIGINS='["http://localhost:3000","http://127.0.0.1:3000"]'

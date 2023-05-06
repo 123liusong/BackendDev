@@ -1,0 +1,20 @@
+{
+  "template": "https://github.com/gaganpreet/fastapi-starter",
+  "commit": "bad28a318de1796cc12dedb80d7799a5eb5542e5",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "app",
+      "project_slug": "app",
+      "backend_port": "8000",
+      "frontend_port": "3000",
+      "_copy_without_render": [
+        "*node_modules",
+        "*src/App.tsx",
+        "*pages/ProfileEdit.tsx"
+      ],
+      "_template": "https://github.com/gaganpreet/fastapi-starter"
+    }
+  },
+  "directory": null
+}

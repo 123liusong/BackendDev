@@ -12,8 +12,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = 'sqlite:///./coronavirus.sqlite3'
-# SQLALCHEMY_DATABASE_URL = "postgresql://username:password@host:port/database_name"  # MySQL或PostgreSQL的连接方法
+# SQLALCHEMY_DATABASE_URL = 'sqlite:///./coronavirus.sqlite3'
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@host:5432/cms"  # MySQL或PostgreSQL的连接方法
 
 engine = create_engine(
     # echo=True表示引擎将用repr()函数记录所有语句及其参数列表到日志

@@ -52,6 +52,14 @@ def user_login(user: schemas.LoginUser, db: Session = Depends(get_db)):
         return HTTPException(status_code=400, detail="Password error")
     return True
 
+#创建100个用户
+@user_api.post("/user/create")
+def user_create(user: schemas.CreateUser, db: Session = Depends(get_db)):
+    for i in range(100):
+        user.email = str(i) + user.email
+        crud.create_user(db=db, user=user)
+    return True
+    
 
 # 更新用户token - 登录时
 @user_api.post("/user/token/update")
