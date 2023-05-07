@@ -47,7 +47,6 @@ def get_team_member_by_id(
     return team_member.get_by_id(id, db)
 
 
-
 # 根据team_id获取团队成员
 @router.get("/get_by_team_id/{team_id}",
             status_code=status.HTTP_200_OK,
@@ -61,6 +60,7 @@ def get_team_member_by_team_id(
 
     return team_member.get_by_team_id(team_id, db)
 
+
 # 根据user_id获取团队
 @router.get("/get_by_user_id/{user_id}",
             status_code=status.HTTP_200_OK,
@@ -73,10 +73,9 @@ def get_team_member_by_user_id(
 ):
 
     return team_member.get_by_member_id(user_id, db)
-    
 
 
-# 根据id删除团队成员
+# 根据记录id删除团队成员
 @router.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_team_member_by_id(
         id: int,
@@ -85,17 +84,57 @@ def delete_team_member_by_id(
         current_user: schemas.User = Depends(get_current_user),
 ):
 
-    return team_member.delete_by_id(id, db)
+    return team_member.delete(id, db)
+
+
+# 根据team_id删除所有团队成员
+@router.delete("/delete_by_team_id/{team_id}",
+               status_code=status.HTTP_204_NO_CONTENT)
+def delete_team_member_by_team_id(
+        team_id: int,
+        response: Response,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(get_current_user),
+):
+
+    return team_member.delete_by_team_id(team_id, db)
+
+
+# 根据user_id删除所有团队
+@router.delete("/delete_by_user_id/{user_id}",
+               status_code=status.HTTP_204_NO_CONTENT)
+def delete_team_member_by_user_id(
+        user_id: int,
+        response: Response,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(get_current_user),
+):
+
+    return team_member.delete_by_member_id(user_id, db)
+
+
+# 根据team_id和user_id删除团队成员
+@router.delete("/delete_by_team_id_and_user_id/{team_id}/{user_id}",
+               status_code=status.HTTP_204_NO_CONTENT)
+def delete_team_member_by_team_id_and_user_id(
+        team_id: int,
+        user_id: int,
+        response: Response,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(get_current_user),
+):
+
+    return team_member.delete_by_member_id_and_team_id(team_id, user_id, db)
+
 
 # 根据id更新团队成员
 @router.put("/update/{id}", status_code=status.HTTP_202_ACCEPTED)
 def update_team_member_by_id(
         id: int,
-        request: schemas.TeamMember,
+        request: schemas.TeamMemberUpdate,
         response: Response,
         db: Session = Depends(get_db),
         current_user: schemas.User = Depends(get_current_user),
 ):
 
     return team_member.update(id, request, db)
-

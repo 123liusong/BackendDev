@@ -8,6 +8,16 @@ from schema import schemas
 from schema.hash import Hash
 
 
+# 删除账号
+def destroy(id: int, db: Session):
+    user = db.query(models.User).filter(models.User.id == id)
+    if not user.first():
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found"
+        )
+    user.delete(synchronize_session=False)
+    db.commit()
+    return {"message": "User deleted successfully"}
 
 
 def create(request: schemas.User, db: Session):

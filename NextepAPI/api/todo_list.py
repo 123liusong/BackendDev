@@ -8,6 +8,30 @@ from schema import schemas
 from schema.hash import Hash
 
 
+# 删除creator_id为user_id的清单
+def delete_by_creator_id(user_id: int, db: Session):
+    db.query(models.TodoList).filter(models.TodoList.creator_id == user_id).delete()
+    db.commit()
+    return {"message": "TodoList deleted successfully"}
+
+# 删除creator_id为user_id,team_id为t_id的清单
+def delete_by_creator_id_and_team_id(user_id: int, t_id: int, db: Session):
+    db.query(models.TodoList).filter(models.TodoList.creator_id == user_id, models.TodoList.team_id == t_id).delete()
+    db.commit()
+    return {"message": "TodoList deleted successfully"}
+
+
+
+# 删除team_id为0,creator_id为user_id的清单
+def delete_by_creator_id_and_personal(user_id: int, db: Session):
+    db.query(models.TodoList).filter(models.TodoList.creator_id == user_id, models.TodoList.team_id == 0).delete()
+    db.commit()
+    return {"message": "TodoList deleted successfully"}
+
+
+
+
+
 # Create todolist
 def create(request: schemas.TodoList, db: Session):
     new_todolist = models.TodoList(

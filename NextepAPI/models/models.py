@@ -17,10 +17,10 @@ class Schedule(Base):
     team = relationship("Team", back_populates="schedules")  # 反向引用
     todo_lists = relationship("TodoList",
                               back_populates="schedules",
-                              secondary='schedule_todo_list')  # 反向引用
+                              secondary='schedule_todo_lists')  # 反向引用
     attachments = relationship("Attachment",
                                back_populates="schedules",
-                               secondary='schedule_attachment')  # 反向引用
+                               secondary='schedule_attachments')  # 反向引用
     start_time = Column(DateTime)  # 开始时间
     end_time = Column(DateTime)  # 结束时间
     state = Column(Integer)  # 状态 0 未完成 1 已完成
@@ -37,12 +37,12 @@ class User(Base):
     name = Column(String)  # 用户名
     email = Column(String, index=True)  # 邮箱
     password = Column(String)  # 密码
-    lteams = relationship("Team", back_populates="leader")  # 反向引用
+    # lteams = relationship("Team", back_populates="leader")  # 反向引用
     schedules = relationship("Schedule", back_populates="creator")  # 反向引用
     logs = relationship("Log", back_populates="creator")  # 反向引用
     teams = relationship("Team",
                          back_populates="members",
-                         secondary='team_member')  # 反向引用
+                         secondary='team_members')  # 反向引用
     todo_lists = relationship("TodoList", back_populates="creator")  # 反向引用
     attachments = relationship("Attachment", back_populates="creator")  # 反向引用
     create_at = Column(DateTime, default=func.now())  # 创建时间
@@ -58,10 +58,10 @@ class Team(Base):
     title = Column(String)  # 团队名
     body = Column(String)  # 团队描述
     leader_id = Column(Integer, ForeignKey("users.id"))  # 队长
-    leader = relationship("User", back_populates="lteams")
+    # leader = relationship("User", back_populates="lteams")
     members = relationship("User",
                            back_populates="teams",
-                           secondary='team_member')  # 反向引用
+                           secondary='team_members')  # 反向引用
     todo_lists = relationship("TodoList", back_populates="team")  # 反向引用
     attachments = relationship("Attachment", back_populates="team")  # 反向引用
     schedules = relationship("Schedule", back_populates="team")  # 反向引用
@@ -70,28 +70,28 @@ class Team(Base):
                        onupdate=func.now())  # 更新时间
 
 
-# # 团队成员表
-# class TeamMember(Base):
-#     __tablename__ = "team_members"
-#     id = Column(Integer, primary_key=True, index=True ,autoincrement=True)  # 团队成员id
-#     alias = Column(String)  #别名
-#     team_id = Column(Integer, ForeignKey("teams.id"))  # 团队id
-#     # team = relationship("Team", back_populates="members")
-#     member_id = Column(Integer, ForeignKey("users.id"))  # 成员id
-#     # member = relationship("User", back_populates="teams")
-#     create_at = Column(DateTime, default=func.now())  # 创建时间
-#     update_at = Column(DateTime,
-#                        default=func.now(),
-#                        onupdate=func.now())  # 更新时间
+# 团队成员表
+class TeamMember(Base):
+    __tablename__ = "team_members"
+    id = Column(Integer, primary_key=True, index=True ,autoincrement=True)  # 团队成员id
+    alias = Column(String)  #别名
+    team_id = Column(Integer, ForeignKey("teams.id"))  # 团队id
+    # team = relationship("Team", back_populates="members")
+    member_id = Column(Integer, ForeignKey("users.id"))  # 成员id
+    # member = relationship("User", back_populates="teams")
+    create_at = Column(DateTime, default=func.now())  # 创建时间
+    update_at = Column(DateTime,
+                       default=func.now(),
+                       onupdate=func.now())  # 更新时间
 
-team_member = Table(
-    "team_member", Base.metadata,
-    Column("id", Integer, primary_key=True, index=True, autoincrement=True),
-    Column("alias", String), Column("team_id", Integer,
-                                    ForeignKey("teams.id")),
-    Column("member_id", Integer, ForeignKey("users.id")),
-    Column("create_at", DateTime, default=func.now()),
-    Column("update_at", DateTime, default=func.now(), onupdate=func.now()))
+# team_member = Table(
+#     "team_member", Base.metadata,
+#     Column("id", Integer, primary_key=True, index=True, autoincrement=True),
+#     Column("alias", String), Column("team_id", Integer,
+#                                     ForeignKey("teams.id")),
+#     Column("member_id", Integer, ForeignKey("users.id")),
+#     Column("create_at", DateTime, default=func.now()),
+#     Column("update_at", DateTime, default=func.now(), onupdate=func.now()))
 
 
 # 附件表
@@ -108,7 +108,7 @@ class Attachment(Base):
     creator = relationship("User", back_populates="attachments")  # 反向引用
     schedules = relationship("Schedule",
                              back_populates="attachments",
-                             secondary='schedule_attachment')  # 反向引用
+                             secondary='schedule_attachments')  # 反向引用
     creator_id = Column(Integer, ForeignKey("users.id"))  # 附件创建者id
     create_at = Column(DateTime, default=func.now())  # 创建时间
 
@@ -128,46 +128,51 @@ class TodoList(Base):
 
     schedules = relationship("Schedule",
                              back_populates="todo_lists",
-                             secondary='schedule_todo_list')  # 反向引用
+                             secondary='schedule_todo_lists')  # 反向引用
     create_at = Column(DateTime, default=func.now())  # 创建时间
     update_at = Column(DateTime, default=func.now(),
                        onupdate=func.now())  # 更新时间
 
 
-# # 日程清单表
-# class ScheduleTodoList(Base):
-#     __tablename__ = "schedule_todo_lists"
-#     id = Column(Integer, primary_key=True, index=True ,autoincrement=True)  # 日程清单id
-#     schedule_id = Column(Integer, ForeignKey("schedules.id"))  # 日程id
-#     schedule = relationship("Schedule", back_populates="todo_lists")
-#     todo_list_id = Column(Integer, ForeignKey("todo_lists.id"))  # 清单id
-#     todoList = relationship("TodoList", back_populates="schedules")
-#     # todo_list = relationship("TodoList", back_populates="schedules")
-#     create_at = Column(DateTime, default=func.now())  # 创建时间
+# 日程清单表
+class ScheduleTodoList(Base):
+    __tablename__ = "schedule_todo_lists"
+    id = Column(Integer, primary_key=True, index=True,
+                autoincrement=True)  # 日程清单id
+    schedule_id = Column(Integer, ForeignKey("schedules.id"))  # 日程id
+    # schedule = relationship("Schedule", back_populates="todo_lists")
+    todo_list_id = Column(Integer, ForeignKey("todo_lists.id"))  # 清单id
+    # todoList = relationship("TodoList", back_populates="schedules")
+    # todo_list = relationship("TodoList", back_populates="schedules")
+    create_at = Column(DateTime, default=func.now())  # 创建时间
 
-schedule_todo_list = Table(
-    "schedule_todo_list", Base.metadata,
-    Column("id", Integer, primary_key=True, index=True, autoincrement=True),
-    Column("schedule_id", Integer, ForeignKey("schedules.id")),
-    Column("todo_list_id", Integer, ForeignKey("todo_lists.id")),
-    Column("create_at", DateTime, default=func.now()))
 
-# # 日程附件表
-# class ScheduleAttachment(Base):
-#     __tablename__ = "schedule_attachments"
-#     id = Column(Integer, primary_key=True, index=True ,autoincrement=True)  # 日程附件id
-#     schedule_id = Column(Integer, ForeignKey("schedules.id"))  # 日程id
-#     schedule = relationship("Schedule", back_populates="attachments")
-#     attachment_id = Column(Integer, ForeignKey("attachments.id"))  # 附件id
-#     attachment = relationship("Attachment", back_populates="schedules")
-#     create_at = Column(DateTime, default=func.now())  # 创建时间
+# schedule_todo_list = Table(
+#     "schedule_todo_list", Base.metadata,
+#     Column("id", Integer, primary_key=True, index=True, autoincrement=True),
+#     Column("schedule_id", Integer, ForeignKey("schedules.id")),
+#     Column("todo_list_id", Integer, ForeignKey("todo_lists.id")),
+#     Column("create_at", DateTime, default=func.now()))
 
-schedule_attachment = Table(
-    "schedule_attachment", Base.metadata,
-    Column("id", Integer, primary_key=True, index=True, autoincrement=True),
-    Column("schedule_id", Integer, ForeignKey("schedules.id")),
-    Column("attachment_id", Integer, ForeignKey("attachments.id")),
-    Column("create_at", DateTime, default=func.now()))
+
+# 日程附件表
+class ScheduleAttachment(Base):
+    __tablename__ = "schedule_attachments"
+    id = Column(Integer, primary_key=True, index=True,
+                autoincrement=True)  # 日程附件id
+    schedule_id = Column(Integer, ForeignKey("schedules.id"))  # 日程id
+    # schedule = relationship("Schedule", back_populates="attachments")
+    attachment_id = Column(Integer, ForeignKey("attachments.id"))  # 附件id
+    # attachment = relationship("Attachment", back_populates="schedules")
+    create_at = Column(DateTime, default=func.now())  # 创建时间
+
+
+# schedule_attachment = Table(
+#     "schedule_attachment", Base.metadata,
+#     Column("id", Integer, primary_key=True, index=True, autoincrement=True),
+#     Column("schedule_id", Integer, ForeignKey("schedules.id")),
+#     Column("attachment_id", Integer, ForeignKey("attachments.id")),
+#     Column("create_at", DateTime, default=func.now()))
 
 
 # 日志表
@@ -184,15 +189,16 @@ class Log(Base):
     create_at = Column(DateTime, default=func.now())  # 创建时间
 
 
-# # 消息表
-# class Message(Base):
-#     __tablename__ = "messages"
-#     id = Column(Integer, primary_key=True, index=True,
-#                 autoincrement=True)  # 消息id
-#     title = Column(String)  # 消息标题
-#     body = Column(String)  # 消息内容
-#     type = Column(Integer)  # 消息类型 0 个人 1 团队
-#     creator_id = Column(Integer, ForeignKey("users.id"))  # 消息创建者id
-#     creator = relationship("User", back_populates="messages")
-#     # 消息创建时间
-#     create_at = Column(DateTime, default=func.now())  # 创建时间
+# 消息表
+class Message(Base):
+    __tablename__ = "messages"
+    id = Column(Integer, primary_key=True, index=True,
+                autoincrement=True)  # 消息id
+    title = Column(String)  # 消息标题
+    body = Column(String)  # 消息内容
+    type = Column(Integer)  # 消息类型 0 个人 1 团队
+    state = Column(Integer)  # 消息状态 0 未读 1 已读
+    creator_id = Column(Integer, ForeignKey("users.id"))  # 消息创建者id
+    to_user_id = Column(Integer, ForeignKey("users.id"))  # 消息接收者id
+    # 消息创建时间
+    create_at = Column(DateTime, default=func.now())  # 创建时间

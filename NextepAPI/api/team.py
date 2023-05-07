@@ -7,6 +7,8 @@ from models import models
 from schema import schemas
 
 
+
+
 # 获取所有团队 for admin
 def get_all(db: Session):
     return db.query(models.Team).all()

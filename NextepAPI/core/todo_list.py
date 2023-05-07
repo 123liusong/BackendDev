@@ -59,6 +59,17 @@ def delete_todo_list_by_id(
     return todo_list.delete(id, db)
 
 
+#删除私人待办事项
+@router.delete("/delete/personal", status_code=status.HTTP_204_NO_CONTENT)
+def delete_personal_todo_list(
+        id: int,
+        response: Response,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(get_current_user),
+):
+    return todo_list.delete_by_creator_id_and_personal(id, db)
+
+
 # 根据id更新待办事项
 @router.put("/update/{id}", status_code=status.HTTP_202_ACCEPTED)
 def update_todo_list_by_id(
@@ -84,7 +95,6 @@ def get_user_todo_list(
     return todo_list.get_all_by_user_id_and_personal(id, db)
 
 
-
 # 根据团队id获取待办事项
 @router.get("/team/{id}/todolist",
             response_model=List[schemas.ShowTodoList],
@@ -95,5 +105,3 @@ def get_team_todo_list(
         current_user: schemas.User = Depends(get_current_user),
 ):
     return todo_list.get_all_by_team_id(id, db)
-
-

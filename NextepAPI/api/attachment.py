@@ -24,6 +24,22 @@ def create(request: schemas.Attachment, db: Session):
     return new_attachment
 
 
+# 删除附件creator_id为user_id的附件并且team_id为0
+def delete_by_creator_id_and_personal(user_id: int, db: Session):
+    attachment = db.query(models.Attachment).filter(
+        models.Attachment.creator_id == user_id).filter(
+            models.Attachment.team_id == 1).all()
+    if not attachment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Attachment with the creator id {user_id} is not available"
+        )
+    for i in attachment:
+        db.delete(i)
+    db.commit()
+    return attachment
+
+
 # Get all attachment for admin
 def get_all(db: Session):
     attachment = db.query(models.Attachment).all()
@@ -40,6 +56,7 @@ def get_by_id(id: int, db: Session):
             detail=f"Attachment with the id {id} is not available")
     return attachment
 
+
 # Get attachment by team id
 def get_by_team_id(team_id: int, db: Session):
     attachment = db.query(
@@ -50,36 +67,43 @@ def get_by_team_id(team_id: int, db: Session):
             detail=f"Attachment with the team id {team_id} is not available")
     return attachment
 
+
 # Get attachment by creator id
 def get_by_creator_id(creator_id: int, db: Session):
-    attachment = db.query(
-        models.Attachment).filter(models.Attachment.creator_id == creator_id).all()
+    attachment = db.query(models.Attachment).filter(
+        models.Attachment.creator_id == creator_id).all()
     if not attachment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Attachment with the creator id {creator_id} is not available")
+            detail=
+            f"Attachment with the creator id {creator_id} is not available")
     return attachment
+
 
 # 获取附件通过创建者id并且不是团队附件
 def get_by_creator_id_and_personal(creator_id: int, db: Session):
-    attachment = db.query(
-        models.Attachment).filter(models.Attachment.creator_id == creator_id).filter(models.Attachment.team_id == 1).all()
+    attachment = db.query(models.Attachment).filter(
+        models.Attachment.creator_id == creator_id).filter(
+            models.Attachment.team_id == 1).all()
     if not attachment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Attachment with the creator id {creator_id} is not available")
+            detail=
+            f"Attachment with the creator id {creator_id} is not available")
     return attachment
+
 
 # 获取附件通过创建者id并且是团队附件
 def get_by_creator_id_and_team(creator_id: int, db: Session):
-    attachment = db.query(
-        models.Attachment).filter(models.Attachment.creator_id == creator_id).filter(models.Attachment.team_id != 1).all()
+    attachment = db.query(models.Attachment).filter(
+        models.Attachment.creator_id == creator_id).filter(
+            models.Attachment.team_id != 1).all()
     if not attachment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Attachment with the creator id {creator_id} is not available")
+            detail=
+            f"Attachment with the creator id {creator_id} is not available")
     return attachment
-
 
 
 # Delete attachment by id
@@ -103,4 +127,4 @@ def update(id: int, request: schemas.Attachment, db: Session):
             detail=f"Attachment with the id {id} is not available")
     attachment.update(request)
     db.commit()
-    return 'updated attachment successfully' 
+    return 'updated attachment successfully'

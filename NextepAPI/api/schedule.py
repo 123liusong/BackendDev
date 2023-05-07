@@ -78,11 +78,17 @@ def get_by_user_start_end_level(start:datetime,end:datetime,level_c:int,db:Sessi
 
 # 搜索创建者id并且开始时间小于结束时间结束时间大于开始时间的日程
 def get_by_start_or_end(start_time: datetime, end_time: datetime, db: Session,
-                        id: int):
+                        creator_id: int):
     return db.query(
-        models.Schedule).filter(models.Schedule.creator_id == id).filter(
+        models.Schedule).filter(models.Schedule.creator_id == creator_id).filter(
             models.Schedule.start_time <= end_time).filter(
                 models.Schedule.end_time >= start_time).all()
+
+#删除creator_id为user_id的日程并且team_id为0的日程
+def delete_by_creator_id_and_personal(user_id:int,db:Session):
+    db.query(models.Schedule).filter(models.Schedule.creator_id == user_id).filter(models.Schedule.team_id == 0).delete(synchronize_session=False)
+    db.commit()
+    return "done delete schedule"
 
 
 # create

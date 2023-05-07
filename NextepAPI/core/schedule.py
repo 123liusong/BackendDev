@@ -34,7 +34,7 @@ def get_all_schedules(
 # 创建日程
 @router.post("/add", status_code=status.HTTP_201_CREATED)
 def create(
-        request: schemas.Schedule,
+        request: schemas.ScheduleCreate,
         db: Session = Depends(get_db),
         current_user: schemas.User = Depends(get_current_user),
 ):
@@ -49,12 +49,12 @@ def create(
 def get_schedule_by_time(
         start_time: str,
         end_time: str,
-        id: int,
+        creator_id: int,
         db: Session = Depends(get_db),
         current_user: schemas.User = Depends(get_current_user),
 ):
 
-    return schedule.get_by_start_or_end(start_time, end_time, db, id)
+    return schedule.get_by_start_or_end(start_time, end_time, db, creator_id)
 
 
 # 根据id获取日程
@@ -102,6 +102,17 @@ def get_schedule_by_team(
         team_schedule.append(schedule)
     return team_schedule
 
+#删除个人的所有日程
+@router.delete("/user/personal/schedules",
+            status_code=status.HTTP_200_OK,
+            response_model=List[schemas.ShowSchedule])
+def delete_schedule_by_user(
+
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(get_current_user),
+):
+
+    return schedule.delete_by_creator_id_and_personal(current_user.id, db)
 
 # 导出日程,根据用户id、开始时间、结束时间、日程级别数组
 @router.get("/export/{id}/{start_time}/{end_time}/{level}",
@@ -121,7 +132,7 @@ def export_schedule(
 
 
 # 根据用户id、开始时间、结束时间、日程级别数组的数组生成文件并返回
-@router.get("/export/file/{id}/{start_time}/{end_time}/{level}")
+@router.get("/export/file")
 def export_schedule_file(
         id: int,
         start_time: str,
@@ -134,24 +145,24 @@ def export_schedule_file(
     schedules = schedule.get_by_user_start_end_level(start_time, end_time,
                                                      level, db, id)
     output =BytesIO()
-    workbook = xlsxwriter.Workbook(output)
-    worksheet = workbook.add_worksheet()    
-    worksheet.write(0, 0, "日程名称")
-    worksheet.write(0, 1, "开始时间")
-    worksheet.write(0, 2, "结束时间")
-    worksheet.write(0, 3, "日程级别")
-    worksheet.write(0, 4, "创建者")
-    worksheet.write(0, 5, "团队")    
+    my_xlsx = xlsxwriter.Workbook(output)
+    my_sheet = my_xlsx.add_worksheet()    
+    my_sheet.write(0, 0, "日程名称")
+    my_sheet.write(0, 1, "开始时间")
+    my_sheet.write(0, 2, "结束时间")
+    my_sheet.write(0, 3, "日程级别")
+    my_sheet.write(0, 4, "创建者")
+    my_sheet.write(0, 5, "团队")    
 
     for i in range(len(schedules)):
-        worksheet.write(i+1, 0, schedules[i].title)
-        worksheet.write(i+1, 1, schedules[i].start_time)
-        worksheet.write(i+1, 2, schedules[i].end_time)
-        worksheet.write(i+1, 3, schedules[i].level)
-        worksheet.write(i+1, 5, schedules[i].creator_id)
-        worksheet.write(i+1, 6, schedules[i].team_id)
+        my_sheet.write(i+1, 0, schedules[i].title)
+        my_sheet.write(i+1, 1, schedules[i].start_time)
+        my_sheet.write(i+1, 2, schedules[i].end_time)
+        my_sheet.write(i+1, 3, schedules[i].level)
+        my_sheet.write(i+1, 5, schedules[i].creator_id)
+        my_sheet.write(i+1, 6, schedules[i].team_id)
     #生成文件
-    workbook.close()
+    my_xlsx.close()
     output.seek(0)
 
     headers ={

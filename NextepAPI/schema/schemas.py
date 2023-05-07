@@ -130,23 +130,24 @@ class ShowTodoList(TodoListBase):
         orm_mode = True
 
 class TeamMemberBase(BaseModel):
-    team_id: int
-    member_id: int
+
     alias: str
 
 
 class TeamMember(TeamMemberBase):
     id: int
-
+    team_id: int
+    member_id: int
 
     class Config:
         orm_mode = True
 
 class TeamMemberCreate(TeamMemberBase):
-    pass
+    team_id: int
+    member_id: int
 
 class TeamMemberUpdate(TeamMemberBase):
-    id: int
+    pass
 
 
 class TeamMemberDelete(TeamMemberBase):
@@ -256,6 +257,7 @@ class ShowLog(LogBase):
 
 # user
 class User(BaseModel):
+    id: int
     name: str
     email: str
     password: str
@@ -297,7 +299,6 @@ class TokenData(BaseModel):
 class ShowTeam(TeamBase):
     id: int
     leader_id: int
-    leader : ShowUser
     create_at: datetime
     update_at: datetime
     schedules : List[Schedule] = []
@@ -320,11 +321,54 @@ class ShowSchedule(ScheduleBase):
 class ShowTeamMember(TeamMemberBase):
     id: int
     team_id: int
-    team : ShowTeam
     member_id: int
-    member : ShowUser
     create_at: datetime
     update_at: datetime
 
     class Config:
         orm_mode = True
+
+
+# # 消息表
+# class Message(Base):
+#     __tablename__ = "messages"
+#     id = Column(Integer, primary_key=True, index=True,
+#                 autoincrement=True)  # 消息id
+#     title = Column(String)  # 消息标题
+#     body = Column(String)  # 消息内容
+#     type = Column(Integer)  # 消息类型 0 个人 1 团队
+#     state = Column(Integer)  # 消息状态 0 未读 1 已读
+#     creator_id = Column(Integer, ForeignKey("users.id"))  # 消息创建者id
+    # to_user_id = Column(Integer, ForeignKey("users.id"))  # 消息接收者id
+#     # 消息创建时间
+#     create_at = Column(DateTime, default=func.now())  # 创建时间
+
+class MessageBase(BaseModel):
+    title: str
+    body: str
+    type: int
+    state: int
+    creator_id: int
+    to_user_id: int
+
+class Message(MessageBase):
+    id: int
+    create_at: datetime
+
+    class Config:
+        orm_mode = True
+
+class MessageCreate(MessageBase):
+    pass
+
+class MessageUpdate(MessageBase):
+    pass
+
+class ShowMessage(MessageBase):
+    id: int
+    create_at: datetime
+
+    class Config:
+        orm_mode = True
+
+

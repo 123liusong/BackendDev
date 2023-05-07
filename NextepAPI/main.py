@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
 
-from core import auth, schedule, user, attachment, log, schedule_attachment, schedule_todo_list, team_member, todo_list, team
+from core import auth,message, schedule, user, attachment, log, schedule_attachment, schedule_todo_list, team_member, todo_list, team
 from database.configuration import engine
 from models import models
 
@@ -30,6 +30,7 @@ app.include_router(schedule_todo_list.router)
 app.include_router(team_member.router)
 app.include_router(todo_list.router)
 app.include_router(team.router)
+app.include_router(message.router)
 
 
 @app.get("/", response_class=HTMLResponse)

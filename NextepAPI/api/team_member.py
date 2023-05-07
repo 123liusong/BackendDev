@@ -51,6 +51,47 @@ def delete(id: int, db: Session):
     db.commit()
     return 'done delete team_member'
 
+# 删除成员id为member_id的所有团队
+def delete_by_member_id(member_id: int, db: Session):
+    team_member = db.query(models.TeamMember).filter(
+        models.TeamMember.member_id == member_id)
+    if not team_member.first():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"TeamMember with the member_id {member_id} is not available")
+    team_member.delete(synchronize_session=False)
+    db.commit()
+    return 'done delete team_member'
+
+# 删除成员id为member_id团队id为team_id的记录
+def delete_by_member_id_and_team_id(member_id: int, team_id: int, db: Session):
+    team_member = db.query(models.TeamMember).filter(
+        models.TeamMember.member_id == member_id,
+        models.TeamMember.team_id == team_id)
+    if not team_member.first():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"TeamMember with the member_id {member_id} and team_id {team_id} is not available")
+    team_member.delete(synchronize_session=False)
+    db.commit()
+    return 'done delete team_member'
+    
+
+
+
+
+#删除团队id为team_id的所有成员
+def delete_by_team_id(team_id: int, db: Session):
+    team_member = db.query(models.TeamMember).filter(
+        models.TeamMember.team_id == team_id)
+    if not team_member.first():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"TeamMember with the team_id {team_id} is not available")
+    team_member.delete(synchronize_session=False)
+    db.commit()
+    return 'done delete team_member'
+
 # 跟新团队成员信息
 def update(id: int, request: schemas.TeamMember, db: Session):
     team_member = db.query(models.TeamMember).filter(
@@ -59,6 +100,6 @@ def update(id: int, request: schemas.TeamMember, db: Session):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"TeamMember with the id {id} is not available")
-    team_member.update(request)
+    team_member.update(request.__dict__)
     db.commit()
     return 'done update team_member'

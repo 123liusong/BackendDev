@@ -6,6 +6,16 @@ from sqlalchemy.orm import Session
 from models import models
 from schema import schemas
 
+# 创建日程清单
+def create(request: schemas.ScheduleTodoList, db: Session): 
+    new_schedule_todo_list = models.ScheduleTodoList(
+        schedule_id=request.schedule_id,
+        todo_list_id=request.todo_list_id,
+        )
+    db.add(new_schedule_todo_list)
+    db.commit()
+    db.refresh(new_schedule_todo_list)
+    return new_schedule_todo_list
 
 # 获取所有日程清单
 def get_all(db: Session):
